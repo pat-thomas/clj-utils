@@ -50,3 +50,9 @@
   `(for [_# (range ~len)]
      ~fn-body))
 
+(defn update-nth
+  [l n update-fn]
+  (let [new-val [(update-fn (nth l n))]
+        head    (take (dec n) l)
+        tail    (drop n l)]
+    (concat head new-val tail)))
