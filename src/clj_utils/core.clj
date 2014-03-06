@@ -6,7 +6,8 @@
   (let [handler (rand-nth fn-list)]
     (apply handler args)))
 
-(defn deep-map [function coll]
+(defn deep-map
+  [function coll]
   (map (fn [c] (map function c))
        coll))
 
@@ -22,7 +23,8 @@
 
 (declare swap-with-prev)
 
-(defn swap-with-next [coll n]
+(defn swap-with-next
+  [coll n]
   (if (>= n (-> coll count dec))
     (swap-with-prev coll n)
     (let [[first-part second-part] (split-at (inc n) coll)
@@ -31,7 +33,8 @@
           swapped-part             [(first second-part) (last first-part)]]
       (concat truncated-first-part swapped-part truncated-second-part))))
 
-(defn swap-with-prev [coll n]
+(defn swap-with-prev
+  [coll n]
   (if (<= n 0)
     (swap-with-next coll n)
     (let [n                        (if (>= n (count coll)) (-> coll count dec) n)
@@ -41,7 +44,8 @@
           swapped-part             [(first second-part) (last first-part)]]
       (concat truncated-first-part swapped-part truncated-second-part))))
 
-(defn randomly-swap [coll]
+(defn randomly-swap
+  [coll]
   (randomly-call [swap-with-next swap-with-prev] coll (rand-int (count coll))))
 
 (defmacro force-repeat
