@@ -56,3 +56,14 @@
         head    (take (dec n) l)
         tail    (drop n l)]
     (concat head new-val tail)))
+
+(defn collect-truthy-values
+  "Like cond, but will return the accumulation of every expression that returns true."
+  [& pred-expr-pairs]
+  (reduce (fn [acc pair]
+            (let [[pred expr] pair]
+              (if pred
+                (conj acc expr)
+                acc)))
+          []
+          (partition 2 pred-expr-pairs)))
