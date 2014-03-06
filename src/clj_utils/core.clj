@@ -71,3 +71,11 @@
                 acc)))
           []
           (partition 2 pred-expr-pairs)))
+
+(defn map-values
+  "Applies f to every value in the map m."
+  [f m]
+  (into {}
+        (map (fn [pair]
+               [(key pair) (f (val pair))])
+             m)))
