@@ -1,4 +1,12 @@
-(ns clj-utils.core)
+(ns clj-utils.core
+  (:require [clojure.tools.logging :as logging]))
+
+(defmacro defn-with-logging
+  [fn-name log-level args-list & body]
+  (let [log-str (str (format "%s/%s" *ns* fn-name) " %s")]
+    `(defn ~fn-name ~args-list
+       (do (clojure.tools.logging/logf ~log-level (format ~log-str ~args-list))
+           ~@body))))
 
 (defn randomly-call
   "Given a list of functions, will randomly call one of them with args as the arguments."
