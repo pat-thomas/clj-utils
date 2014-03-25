@@ -3,10 +3,13 @@
 
 (defmacro defn-with-logging
   [fn-name log-level args-list & body]
-  (let [log-str (str (format "%s/%s" *ns* fn-name) " %s")]
-    `(defn ~fn-name ~args-list
-       (do (clojure.tools.logging/logf ~log-level (format ~log-str ~args-list))
-           ~@body))))
+  (let [valid-log-levels [:trace :debug :info :warn :error :fatal]]
+    (if-not (some #{log-level} valid-log-levels)
+      (throw (Exception. (format "%s is not a valid log level. Valid log levels are: %s" log-level valid-log-levels)))
+      (let [log-str (str (format "%s/%s" *ns* fn-name) " %s")]
+        `(defn ~fn-name ~args-list
+           (do (clojure.tools.logging/logf ~log-level (format ~log-str ~args-list))
+               ~@body))))))
 
 (defn randomly-call
   "Given a list of functions, will randomly call one of them with args as the arguments."
