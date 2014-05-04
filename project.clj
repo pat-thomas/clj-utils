@@ -3,7 +3,7 @@
   :url          "http://github.com/pat-thomas/clj-utils"
   :license      {:name "Eclipse Public License"
                  :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :lein-release {:scm :git
-                 :deploy-via :clojars}
+  :repositories [["releases" {:url   "http://github.com/pat-thomas/clj-utils"
+                              :creds :gpg}]]
   :dependencies [[org.clojure/clojure       "1.6.0"]
                  [org.clojure/tools.logging "0.2.6"]])
