@@ -85,13 +85,17 @@
 
 (defmacro make-fn-alias
   "namespace and fn-name are both keywords."
-  [namespace fn-name]
-  (assert (and (keyword? namespace)
+  [n-space fn-name]
+  (assert (and (keyword? n-space)
                (keyword? fn-name)))
-  (if-let [looked-up-fn (ns-resolve (symbol (name namespace))
+  (if-let [looked-up-fn (ns-resolve (symbol (name n-space))
                                       (symbol (name fn-name)))]
     (let [looked-up-fn-argslist (-> looked-up-fn meta :arglists)]
       `(defn ~(symbol (name fn-name))
          ~(first looked-up-fn-argslist)
          (~looked-up-fn ~@(first looked-up-fn-argslist))))
-    (throw (Exception. (format "Couldn't locate function %s in namespace %s" (name fn-name) (name namespace))))))
+    (throw (Exception. (format "Couldn't locate function %s in namespace %s" (name fn-name) (name n-space))))))
+
+
+
+
