@@ -74,15 +74,6 @@
                [(key pair) (f (val pair))])
              m)))
 
-(defmacro make-map
-  "Given a list of symbols, creates a map of each symbol converted
-   to a keyword, each of which is keyed to the symbol itself."
-  [things & opts]
-  `(reduce (fn [acc# t#]
-             (assoc acc# (-> t# name keyword) t#))
-           {}
-           '~things))
-
 (defmacro make-fn-alias
   "namespace and fn-name are both keywords."
   [n-space fn-name]

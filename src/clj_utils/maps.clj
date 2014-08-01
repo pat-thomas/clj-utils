@@ -10,3 +10,12 @@
                 m))
             m
             (partition 2 key-update-pairs))))
+
+(defmacro make-map
+  "Given a list of symbols, creates a map of each symbol converted
+   to a keyword, each of which is keyed to the symbol itself."
+  [& ks]
+  (reduce (fn [acc k]
+            (assoc acc (keyword k) k))
+          {}
+          ks))
