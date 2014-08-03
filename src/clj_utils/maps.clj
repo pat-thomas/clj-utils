@@ -15,7 +15,8 @@
   "Given a list of symbols, creates a map of each symbol converted
    to a keyword, each of which is keyed to the symbol itself."
   [& ks]
-  (reduce (fn [acc k]
-            (assoc acc (keyword k) k))
-          {}
-          ks))
+  (apply hash-map
+         (mapcat (fn [k]
+                   (vector (keyword k) k))
+                 ks)))
+
