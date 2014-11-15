@@ -20,13 +20,13 @@
                     `(def ~fn-name ~aliased-fn-sym))))))))
 
 (defmacro alias-all-in-ns
-  [^clojure.lang.Keyword namespace]
+  [namespace]
   (let [ns-sym (-> namespace name symbol)]
     (do (require ns-sym)
         `(do ~@(produce-alias-defs-list ns-sym)))))
 
-(alias-all-in-ns :clj-utils.lang-utils)
-(alias-all-in-ns :clj-utils.macros)
-(alias-all-in-ns :clj-utils.maps)
-(alias-all-in-ns :clj-utils.random)
-(alias-all-in-ns :clj-utils.seq-utils)
+(alias-all-in-ns clj-utils.lang-utils)
+(alias-all-in-ns clj-utils.macros)
+(alias-all-in-ns clj-utils.maps)
+(alias-all-in-ns clj-utils.random)
+(alias-all-in-ns clj-utils.seq-utils)
