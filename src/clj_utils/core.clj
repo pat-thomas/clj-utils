@@ -16,7 +16,7 @@
                    (not (macro? (->aliased-fn-sym ns-sym fn-name)))))
          (map (fn build-alias [fn-name]
                 (when-not (macro? (symbol fn-name))
-                  (let [aliased-fn-sym (-> ns-sym (str "/" fn-name) symbol)]
+                  (let [aliased-fn-sym (->aliased-fn-sym ns-sym fn-name)]
                     `(def ~fn-name ~aliased-fn-sym))))))))
 
 (defmacro alias-all-in-ns
