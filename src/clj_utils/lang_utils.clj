@@ -1,10 +1,15 @@
 (ns clj-utils.lang-utils)
 
-(defmacro defmapper
-  [name impl]
-  `(defn ~name
-     [anon#]
-     (map ~impl anon#)))
+(defn collect-truthy-values
+  "Like cond, but will return the accumulation of every expression that returns true."
+  [& pred-expr-pairs]
+  (reduce (fn [acc pair]
+            (let [[pred expr] pair]
+              (if pred
+                (conj acc expr)
+                acc)))
+          []
+          (partition 2 pred-expr-pairs)))
 
 (defn remove-nil-values
   "Removes values from a map that are nil."

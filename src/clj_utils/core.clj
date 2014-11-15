@@ -1,92 +1,32 @@
-(ns clj-utils.core
-  (:require [clojure.tools.logging :as logging]))
+(ns clj-utils.core)
 
-(defmacro defn-with-logging
-  [fn-name log-level args-list & body]
-  (let [valid-log-levels [:trace :debug :info :warn :error :fatal]]
-    (if-not (some #{log-level} valid-log-levels)
-      (throw (Exception. (format "%s is not a valid log level. Valid log levels are: %s" log-level valid-log-levels)))
-      (let [log-str (str (format "%s/%s" *ns* fn-name) " %s")]
-        `(defn ~fn-name ~args-list
-           (do (clojure.tools.logging/logf ~log-level (format ~log-str ~args-list))
-               ~@body))))))
+(defn- macro?
+  [sym]
+  (->> sym (ns-resolve *ns*) meta :macro))
 
-(defn deep-map
-  [function coll]
-  (map #(map function %) coll))
+(defn- ->aliased-fn-sym
+  [ns-sym fn-name]
+  (-> ns-sym (str "/" fn-name) symbol))
 
-(declare swap-with-prev)
+(defn- produce-alias-defs-list
+  [ns-sym]
+  (let [fns-in-ns (-> ns-sym ns-publics keys)]
+    (->> fns-in-ns
+         (filter (fn remove-macros [fn-name]
+                   (not (macro? (->aliased-fn-sym ns-sym fn-name)))))
+         (map (fn build-alias [fn-name]
+                (when-not (macro? (symbol fn-name))
+                  (let [aliased-fn-sym (-> ns-sym (str "/" fn-name) symbol)]
+                    `(def ~fn-name ~aliased-fn-sym))))))))
 
-(defn swap-with-next
-  "Given a collection and an index n, returns that collection
-   with the elements at position n and position (n+1) swapped."
-  [coll n]
-  (if (>= n (-> coll count dec))
-    (swap-with-prev coll n)
-    (let [[first-part second-part] (split-at (inc n) coll)
-          truncated-first-part     (drop-last first-part)
-          truncated-second-part    (drop 1 second-part)
-          swapped-part             [(first second-part) (last first-part)]]
-      (concat truncated-first-part swapped-part truncated-second-part))))
+(defmacro alias-all-in-ns
+  [^clojure.lang.Keyword namespace]
+  (let [ns-sym (-> namespace name symbol)]
+    (do (require ns-sym)
+        `(do ~@(produce-alias-defs-list ns-sym)))))
 
-(defn swap-with-prev
-  "Given a collection and an index n, returns that collection
-   with the elements at position n and position (n-1) swapped."
-  [coll n]
-  (if (<= n 0)
-    (swap-with-next coll n)
-    (let [n                        (if (>= n (count coll)) (-> coll count dec) n)
-          [first-part second-part] (split-at n coll)
-          truncated-first-part     (drop-last first-part)
-          truncated-second-part    (drop 1 second-part)
-          swapped-part             [(first second-part) (last first-part)]]
-      (concat truncated-first-part swapped-part truncated-second-part))))
-
-(defmacro force-repeat
-  "Like (repeat), but forces reevaluation of the function call. Useful for non-referentially-transparent functions."
-  [len fn-body]
-  `(for [_# (range ~len)]
-     ~fn-body))
-
-(defn update-nth
-  [l n update-fn]
-  (let [new-val [(update-fn (nth l n))]
-        head    (take (dec n) l)
-        tail    (drop n l)]
-    (concat head new-val tail)))
-
-(defn collect-truthy-values
-  "Like cond, but will return the accumulation of every expression that returns true."
-  [& pred-expr-pairs]
-  (reduce (fn [acc pair]
-            (let [[pred expr] pair]
-              (if pred
-                (conj acc expr)
-                acc)))
-          []
-          (partition 2 pred-expr-pairs)))
-
-(defn map-values
-  "Applies f to every value in the map m."
-  [f m]
-  (into {}
-        (map (fn [pair]
-               [(key pair) (f (val pair))])
-             m)))
-
-(defmacro make-fn-alias
-  "namespace and fn-name are both keywords."
-  [n-space fn-name]
-  (assert (and (keyword? n-space)
-               (keyword? fn-name)))
-  (if-let [looked-up-fn (ns-resolve (symbol (name n-space))
-                                      (symbol (name fn-name)))]
-    (let [looked-up-fn-argslist (-> looked-up-fn meta :arglists)]
-      `(defn ~(symbol (name fn-name))
-         ~(first looked-up-fn-argslist)
-         (~looked-up-fn ~@(first looked-up-fn-argslist))))
-    (throw (Exception. (format "Couldn't locate function %s in namespace %s" (name fn-name) (name n-space))))))
-
-
-
-
+(alias-all-in-ns :clj-utils.lang-utils)
+(alias-all-in-ns :clj-utils.macros)
+(alias-all-in-ns :clj-utils.maps)
+(alias-all-in-ns :clj-utils.random)
+(alias-all-in-ns :clj-utils.seq-utils)
