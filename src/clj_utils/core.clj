@@ -1,4 +1,5 @@
-(ns clj-utils.core)
+(ns clj-utils.core
+  (:require [clj-utils.macros :refer :all]))
 
 (defn- macro?
   [sym]
