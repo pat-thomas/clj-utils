@@ -7,10 +7,6 @@
   (let [handler (rand-nth fn-list)]
     (apply handler args)))
 
-(defn randomly-swap
-  [coll]
-  (randomly-call [core-utils/swap-with-next core-utils/swap-with-prev] coll (rand-int (count coll))))
-
 (defn rand-seq-from-pool
   ([pool len]
      (vec
