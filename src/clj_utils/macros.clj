@@ -31,3 +31,12 @@
                 (gen-arity fn-name partial-args-list))
               partial-args-lists)
        (~full-args-list ~@body))))
+
+(defmacro defn-with-return-map
+  [fn-name ret-map arg-vec & body]
+  `(defn ~fn-name
+     ~arg-vec
+     (let [ret# ~@body]
+       (merge ~ret-map
+              {:ret ret#}))))
+
