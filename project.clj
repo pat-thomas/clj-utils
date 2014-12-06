@@ -5,4 +5,5 @@
                  :url "http://www.eclipse.org/legal/epl-v10.html"}
   :repositories [["releases" {:url   "http://github.com/pat-thomas/clj-utils"
                               :creds :gpg}]]
-  :dependencies [[org.clojure/clojure       "1.6.0"]])
+  :dependencies [[org.clojure/clojure    "1.6.0"]
+                 [org.clojure/core.typed "0.2.72"]])
