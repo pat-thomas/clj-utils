@@ -37,10 +37,20 @@
                                    (partition 2)
                                    (map first)))))))))
 
-
 (defmacro defn-with-nil-protection
   [fn-name args-list & body]
   `(defn ~fn-name
      ~args-list
      (assert (every? true? (map (comp not nil?) ~args-list)))
      ~@body))
+
+(defn- namespace->alias
+  [ns-to-require]
+  (-> ns-to-require str (clojure.string/split #"\.") last symbol))
+
+
+(defmacro ns-require
+  "some-ns.foo.helpers -> (require 'some-ns.foo.helpers :as helpers)"
+  [ns-to-require]
+  `(require (quote [~ns-to-require :as ~(namespace->alias ns-to-require)])))
+
