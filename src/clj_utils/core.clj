@@ -48,7 +48,6 @@
   [ns-to-require]
   (-> ns-to-require str (clojure.string/split #"\.") last symbol))
 
-
 (defmacro ns-require
   "some-ns.foo.helpers -> (require 'some-ns.foo.helpers :as helpers)"
   [ns-to-require]
